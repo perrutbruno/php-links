@@ -2,7 +2,7 @@
 
 node {
 	checkout()
-	slackStartJob()
+//	slackStartJob()
 
 	/* feature branch */
 	if ( env.BRANCH_NAME != 'master' ) {
@@ -22,7 +22,7 @@ node {
 		promoteQA()
 		userApproval3()
 		promotePROD()
-		slackFinishedJob()
+//		slackFinishedJob()
 	}
 }
 
@@ -34,11 +34,11 @@ def checkout () {
 	checkout scm
 }
 
-def slackStartJob () {
-    	stage 'slackStartJob'
+///def slackStartJob () {
+ //   	stage 'slackStartJob'
     	sh 'git log -1 --pretty=%B > commit-log.txt'
     	GIT_COMMIT=readFile('commit-log.txt').trim()
-    	slackSend channel: 'aristides', color: '#37d660', message: ":metal: - PROJECT - ${env.JOB_NAME} - BUILD - ${env.BUILD_NUMBER} - (${GIT_COMMIT}) - Pipeline Started! "
+ //   	slackSend channel: 'aristides', color: '#37d660', message: ":metal: - PROJECT - ${env.JOB_NAME} - BUILD - ${env.BUILD_NUMBER} - (${GIT_COMMIT}) - Pipeline Started! "
 }
 
 def branchDeploy () {
@@ -53,7 +53,7 @@ def branchCleanup () {
 }
 
 def msgbranchCleanup () {
-    	slackSend channel: 'aristides', color: '#f74545', message: ":thumbsup_all: - PROJECT - ${env.JOB_NAME} - BUILD - ${env.BUILD_NUMBER} - (${GIT_COMMIT}) - Branch environment deleted!"
+    	//slackSend channel: 'aristides', color: '#f74545', message: ":thumbsup_all: - PROJECT - ${env.JOB_NAME} - BUILD - ${env.BUILD_NUMBER} - (${GIT_COMMIT}) - Branch environment deleted!"
 }
 
 def masterDevDeploy () {
@@ -104,7 +104,7 @@ def allTests () {
 
 def userApproval () {
 	stage 'userApproval'
-	slackSend channel: 'aristides', color: '#3399ff', message: ":point_up_2::skin-tone-2: - DEV - Please check out your app at : - http://app-${env.BRANCH_NAME}-aristides.getup.io/ "
+	//slackSend channel: 'aristides', color: '#3399ff', message: ":point_up_2::skin-tone-2: - DEV - Please check out your app at : - http://app-${env.BRANCH_NAME}-aristides.getup.io/ "
 	timeout(time: 5, unit: 'MINUTES'){
 		try {
 			input message: 'Is this version ready ? In 5 Minutes this step will be processed automatically!', id: 'input1', submitter: 'dev,admin'
@@ -118,11 +118,11 @@ def userApproval () {
 
 def userApproval2 () {
 	stage 'userApproval'
-	slackSend channel: 'aristides', color: '#42e2f4', message: ":dusty_stick: - CTO - Please evaluate the Project - ${env.JOB_NAME} - http://jenkins-aristides.getup.io/blue/organizations/jenkins/aristides/detail/master/${env.BUILD_NUMBER}/pipeline/ "
+	//slackSend channel: 'aristides', color: '#42e2f4', message: ":dusty_stick: - CTO - Please evaluate the Project - ${env.JOB_NAME} - http://jenkins-aristides.getup.io/blue/organizations/jenkins/aristides/detail/master/${env.BUILD_NUMBER}/pipeline/ "
 	try {
 		input message: 'Is this version ready ?', id: 'input1', submitter: 'admin'
 	} catch (err) {
-		slackSend channel: 'aristides', color: '#1e602f', message: ":goberserk: - Pipeline Aborted"
+		//slackSend channel: 'aristides', color: '#1e602f', message: ":goberserk: - Pipeline Aborted"
 		error ("Aborted Here2") 
 	}
 }
@@ -130,10 +130,10 @@ def userApproval2 () {
 def userApproval3 () {
 	stage 'userApproval'
 	try {
-		sh './slack-hook.sh'
+	//	/sh './slack-hook.sh'
 		input message: 'Is this version ready ?', id: 'input1', submitter: 'admin'
 	} catch (err) {
-		slackSend channel: 'aristides', color: '#1e602f', message: ":goberserk: - Pipeline Aborted"
+	//	slackSend channel: 'aristides', color: '#1e602f', message: ":goberserk: - Pipeline Aborted"
 		error ("Aborted Here2") 
 	}
 }
@@ -152,9 +152,9 @@ def promotePROD () {
     openshiftVerifyDeployment(deploymentConfig: 'app-prod', verbose: 'false', waitTime: '10', waitUnit: 'min')
 }
 
-def slackFinishedJob () {
-	stage 'slackFinishedJob'
+//def slackFinishedJob () {
+	//stage 'slackFinishedJob'
 	sh 'git log -1 --pretty=%B > commit-log.txt'
 	GIT_COMMIT=readFile('commit-log.txt').trim()
-	slackSend channel: 'aristides', color: '#1e602f', message: ":rocket: - PROJECT - ${env.JOB_NAME} - BUILD - ${env.BUILD_NUMBER} - (${GIT_COMMIT}) - Now running in PROD!"
+	//slackSend channel: 'aristides', color: '#1e602f', message: ":rocket: - PROJECT - ${env.JOB_NAME} - BUILD - ${env.BUILD_NUMBER} - (${GIT_COMMIT}) - Now running in PROD!"
 }
